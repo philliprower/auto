@@ -771,7 +771,7 @@ public class CompilationTest {
         "",
         "    @Override",
         "    public Baz.Builder<T> aList(List<T> aList) {",
-        "      this.aList = aList;",
+        "      this.aList = java.util.Collections.unmodifiableList(aList);",
         "      return this;",
         "    }",
         "",
@@ -1681,7 +1681,7 @@ public class CompilationTest {
           return method.invoke(originalProcessingEnv, args);
         }
       }
-    };
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

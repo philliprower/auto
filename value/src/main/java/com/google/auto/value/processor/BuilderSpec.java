@@ -277,8 +277,31 @@ class BuilderSpec {
       Types typeUtils = processingEnv.getTypeUtils();
       TypeMirror erasedPropertyType = typeUtils.erasure(propertyType);
       boolean sameType = typeUtils.isSameType(typeUtils.erasure(parameterType), erasedPropertyType);
+      String substitute = null;
+      if (sameType) {
+        TypeElement listType = processingEnv.getElementUtils().getTypeElement("java.util.List");
+        TypeElement sortedSetType = processingEnv.getElementUtils().getTypeElement("java.util.SortedSet");
+        TypeElement setType = processingEnv.getElementUtils().getTypeElement("java.util.Set");
+        TypeElement sortedMapType = processingEnv.getElementUtils().getTypeElement("java.util.SortedMap");
+        TypeElement mapType = processingEnv.getElementUtils().getTypeElement("java.util.Map");
+        TypeElement collectionsType = processingEnv.getElementUtils().getTypeElement("java.util.Collection");
+        if (typeUtils.isAssignable(erasedPropertyType,listType.asType())) {
+          substitute = "java.util.Collections.unmodifiableList(%s)";
+        } else if (typeUtils.isAssignable(erasedPropertyType,sortedSetType.asType())) {
+          substitute = "java.util.Collections.unmodifiableSortedSet(%s)";
+        } else if (typeUtils.isAssignable(erasedPropertyType,setType.asType())) {
+          substitute = "java.util.Collections.unmodifiableSet(%s)";
+        } else if (typeUtils.isAssignable(erasedPropertyType,sortedMapType.asType())) {
+          substitute = "java.util.Collections.unmodifiableSortedMap(%s)";
+        }else if (typeUtils.isAssignable(erasedPropertyType,mapType.asType())) {
+          substitute = "java.util.Collections.unmodifiableMap(%s)";
+        } else if (typeUtils.isAssignable(erasedPropertyType,collectionsType.asType())) {
+          substitute = "java.util.Collections.unmodifiableCollection(%s)";
+        }
+
+      }
       this.copyOf = sameType
-          ? null
+          ? substitute
           : typeSimplifier.simplifyRaw(erasedPropertyType) + ".copyOf(%s)";
     }
 

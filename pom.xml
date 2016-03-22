@@ -122,4 +122,7 @@
       </properties>
     </profile>
   </profiles>
+  <modules>
+    <module>value</module>
+  </modules>
 </project>
