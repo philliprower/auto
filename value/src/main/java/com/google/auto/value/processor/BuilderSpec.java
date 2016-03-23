@@ -284,10 +284,10 @@ class BuilderSpec {
       if (sameType) {
         String erasedPropertyTypeString = erasedPropertyType.toString();
         // stop shading from changing package name here
-        boolean googleImmutableCollection = erasedPropertyTypeString.contains(immutableCollection);
-        boolean googleImmutableList = erasedPropertyTypeString.contains(immutableList);
-        boolean googleImmutableSet = erasedPropertyTypeString.contains(immutableSet);
-        boolean googleImmutableMap = erasedPropertyTypeString.contains(immutableMap);
+        boolean googleImmutableCollection = erasedPropertyTypeString.equals("com.".concat(immutableCollection));
+        boolean googleImmutableList = erasedPropertyTypeString.equals("com.".concat(immutableList));
+        boolean googleImmutableSet = erasedPropertyTypeString.equals("com.".concat(immutableSet));
+        boolean googleImmutableMap = erasedPropertyTypeString.equals("com.".concat(immutableMap));
         if (!(googleImmutableCollection || googleImmutableList || googleImmutableSet || googleImmutableMap)) {
           TypeElement listType = processingEnv.getElementUtils().getTypeElement("java.util.List");
           TypeElement sortedSetType = processingEnv.getElementUtils().getTypeElement("java.util.SortedSet");
