@@ -279,26 +279,32 @@ class BuilderSpec {
       boolean sameType = typeUtils.isSameType(typeUtils.erasure(parameterType), erasedPropertyType);
       String substitute = null;
       if (sameType) {
-        TypeElement listType = processingEnv.getElementUtils().getTypeElement("java.util.List");
-        TypeElement sortedSetType = processingEnv.getElementUtils().getTypeElement("java.util.SortedSet");
-        TypeElement setType = processingEnv.getElementUtils().getTypeElement("java.util.Set");
-        TypeElement sortedMapType = processingEnv.getElementUtils().getTypeElement("java.util.SortedMap");
-        TypeElement mapType = processingEnv.getElementUtils().getTypeElement("java.util.Map");
-        TypeElement collectionsType = processingEnv.getElementUtils().getTypeElement("java.util.Collection");
-        if (typeUtils.isAssignable(erasedPropertyType,listType.asType())) {
-          substitute = "java.util.Collections.unmodifiableList(%s)";
-        } else if (typeUtils.isAssignable(erasedPropertyType,sortedSetType.asType())) {
-          substitute = "java.util.Collections.unmodifiableSortedSet(%s)";
-        } else if (typeUtils.isAssignable(erasedPropertyType,setType.asType())) {
-          substitute = "java.util.Collections.unmodifiableSet(%s)";
-        } else if (typeUtils.isAssignable(erasedPropertyType,sortedMapType.asType())) {
-          substitute = "java.util.Collections.unmodifiableSortedMap(%s)";
-        }else if (typeUtils.isAssignable(erasedPropertyType,mapType.asType())) {
-          substitute = "java.util.Collections.unmodifiableMap(%s)";
-        } else if (typeUtils.isAssignable(erasedPropertyType,collectionsType.asType())) {
-          substitute = "java.util.Collections.unmodifiableCollection(%s)";
+        String erasedPropertyTypeString = erasedPropertyType.toString();
+        Boolean googleImmutableCollection = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableCollection");
+        Boolean googleImmutableList = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableList");
+        Boolean googleImmutableSet = "com.google.common.collect.ImmutableSet".equals(erasedPropertyTypeString);
+        Boolean googleImmutableMap = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableMap");
+        if (!(googleImmutableCollection || googleImmutableList || googleImmutableSet || googleImmutableMap)) {
+          TypeElement listType = processingEnv.getElementUtils().getTypeElement("java.util.List");
+          TypeElement sortedSetType = processingEnv.getElementUtils().getTypeElement("java.util.SortedSet");
+          TypeElement setType = processingEnv.getElementUtils().getTypeElement("java.util.Set");
+          TypeElement sortedMapType = processingEnv.getElementUtils().getTypeElement("java.util.SortedMap");
+          TypeElement mapType = processingEnv.getElementUtils().getTypeElement("java.util.Map");
+          TypeElement collectionsType = processingEnv.getElementUtils().getTypeElement("java.util.Collection");
+          if (typeUtils.isAssignable(erasedPropertyType, listType.asType())) {
+            substitute = "java.util.Collections.unmodifiableList(%s)";
+          } else if (typeUtils.isAssignable(erasedPropertyType, sortedSetType.asType())) {
+            substitute = "java.util.Collections.unmodifiableSortedSet(%s)";
+          } else if (typeUtils.isAssignable(erasedPropertyType, setType.asType())) {
+            substitute = "java.util.Collections.unmodifiableSet(%s)";
+          } else if (typeUtils.isAssignable(erasedPropertyType, sortedMapType.asType())) {
+            substitute = "java.util.Collections.unmodifiableSortedMap(%s)";
+          } else if (typeUtils.isAssignable(erasedPropertyType, mapType.asType())) {
+            substitute = "java.util.Collections.unmodifiableMap(%s)";
+          } else if (typeUtils.isAssignable(erasedPropertyType, collectionsType.asType())) {
+            substitute = "java.util.Collections.unmodifiableCollection(%s)";
+          }
         }
-
       }
       this.copyOf = sameType
           ? substitute
