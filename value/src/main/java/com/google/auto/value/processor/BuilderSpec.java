@@ -264,7 +264,10 @@ class BuilderSpec {
     private final String name;
     private final String parameterTypeString;
     private final String copyOf;
-
+    static private final String immutableCollection = "google.common.collect.ImmutableCollection";
+    static private final String immutableList = "google.common.collect.ImmutableList";
+    static private final String immutableSet = "google.common.collect.ImmutableSet";
+    static private final String immutableMap = "google.common.collect.ImmutableMap";
     public PropertySetter(
         ExecutableElement setter, TypeMirror propertyType, TypeSimplifier typeSimplifier) {
       this.name = setter.getSimpleName().toString();
@@ -280,10 +283,11 @@ class BuilderSpec {
       String substitute = null;
       if (sameType) {
         String erasedPropertyTypeString = erasedPropertyType.toString();
-        Boolean googleImmutableCollection = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableCollection");
-        Boolean googleImmutableList = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableList");
-        Boolean googleImmutableSet = "com.google.common.collect.ImmutableSet".equals(erasedPropertyTypeString);
-        Boolean googleImmutableMap = erasedPropertyTypeString.equals("com.google.common.collect.ImmutableMap");
+        // stop shading from changing package name here
+        boolean googleImmutableCollection = erasedPropertyTypeString.contains(immutableCollection);
+        boolean googleImmutableList = erasedPropertyTypeString.contains(immutableList);
+        boolean googleImmutableSet = erasedPropertyTypeString.contains(immutableSet);
+        boolean googleImmutableMap = erasedPropertyTypeString.contains(immutableMap);
         if (!(googleImmutableCollection || googleImmutableList || googleImmutableSet || googleImmutableMap)) {
           TypeElement listType = processingEnv.getElementUtils().getTypeElement("java.util.List");
           TypeElement sortedSetType = processingEnv.getElementUtils().getTypeElement("java.util.SortedSet");
