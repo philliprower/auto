@@ -42,6 +42,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
@@ -1859,5 +1862,69 @@ public class AutoValueTest extends TestCase {
   public void testInheritSameMethodTwice() {
     InheritSameMethodTwice x = InheritSameMethodTwice.create(23);
     assertThat(x.something()).isEqualTo(23);
+  }
+
+  @AutoValue
+  abstract static class StandardImmutableJavaUtilCollections {
+    static Builder builder() {
+      return new AutoValue_AutoValueTest_StandardImmutableJavaUtilCollections.Builder();
+    }
+    abstract List<String> listOfStrings();
+    abstract Set<String> setOfStrings();
+    abstract Map<String,String> mapOfStrings();
+
+    @AutoValue.Builder
+    abstract static class Builder {
+      abstract Builder listOfStrings(List<String> listOfStrings);
+      abstract Builder setOfStrings(Set<String> setOfStrings);
+      abstract Builder mapOfStrings(Map<String,String> mapOfStrings);
+      abstract StandardImmutableJavaUtilCollections build();
+    }
+
+  }
+
+  public void testStandardJavaUtilCollections () {
+    StandardImmutableJavaUtilCollections.Builder builder = StandardImmutableJavaUtilCollections.builder();
+    List<String> list = new ArrayList<String>();
+    list.add("One");
+    list.add("Two");
+    Set<String> set = new HashSet<String>();
+    set.add("Three");
+    set.add("Four");
+    Map<String,String> map = new HashMap<String, String>();
+    map.put("1","one");
+    map.put("2","two");
+    StandardImmutableJavaUtilCollections standardJavaUtilCollections = builder.listOfStrings(list).setOfStrings(set).mapOfStrings(map).build();
+    assertNotNull(standardJavaUtilCollections);
+    try {
+      standardJavaUtilCollections.listOfStrings().add("Five");
+      fail("Expect add to list throws UnsupportedOperationException");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
+    try {
+      standardJavaUtilCollections.setOfStrings().add("Six");
+      fail("Expect add to set throws UnsupportedOperationException");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
+    try {
+      standardJavaUtilCollections.mapOfStrings().put("three","3");
+      fail("Expect add to set throws UnsupportedOperationException");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
+    try {
+      standardJavaUtilCollections.listOfStrings().remove(0);
+      fail("Expect add to list throws UnsupportedOperationException");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
+    try {
+      standardJavaUtilCollections.setOfStrings().remove(0);
+      fail("Expect add to set throws UnsupportedOperationException");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
   }
 }
